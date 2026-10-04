@@ -1,185 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#7a3fc4">
   <title>Doğum Günü Rengi</title>
   <meta name="designer" content="Köksal Akgün">
   <meta name="keywords" content="renkli doğum günü, doğum günü rengi, renk seçici, özel gün renkleri, kişisel renk paleti">
   <meta name="description" content="Renkli Doğum Günü uygulaması ile doğum gününüzü renklerle kutlayın! Gün, ay ve yıl seçerek kişisel renk paletinizi oluşturun ve özel gününüzü daha da anlamlı kılın.">
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%237a3fc4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div class="container mt-6">
-    <h1>Doğum Günü Rengi</h1>
-    <div class="row">
-      <div class="col-md-4">
-        <label for="day">GÜN</label>
-        <select id="day" onchange="updateColor()" class="form-select">
-          <option value="0">1</option>
-          <option value="1">2</option>
-          <option value="2">3</option>
-          <option value="3">4</option>
-          <option value="4">5</option>
-          <option value="5">6</option>
-          <option value="6">7</option>
-          <option value="7">8</option>
-          <option value="8">9</option>
-          <option value="9">10</option>
-          <option value="10">11</option>
-          <option value="11">12</option>
-          <option value="12">13</option>
-          <option value="13">14</option>
-          <option value="14">15</option>
-          <option value="15">16</option>
-          <option value="16">17</option>
-          <option value="17">18</option>
-          <option value="18">19</option>
-          <option value="19">20</option>
-          <option value="20">21</option>
-          <option value="21">22</option>
-          <option value="22">23</option>
-          <option value="23">24</option>
-          <option value="24">25</option>
-          <option value="25">26</option>
-          <option value="26">27</option>
-          <option value="27">28</option>
-          <option value="28">29</option>
-          <option value="29">30</option>
-          <option value="30">31</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <label for="month">AY</label>
-        <select id="month" onchange="updateColor()" class="form-select">
-          <option value="0">Ocak</option>
-          <option value="1">Şubat</option>
-          <option value="2">Mart</option>
-          <option value="3">Nisan</option>
-          <option value="4">Mayıs</option>
-          <option value="5">Haziran</option>
-          <option value="6">Temmuz</option>
-          <option value="7">Ağustos</option>
-          <option value="8">Eylül</option>
-          <option value="9">Ekim</option>
-          <option value="10">Kasım</option>
-          <option value="11">Aralık</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <label for="year">YIL</label>
-        <select id="year" onchange="updateColor()" class="form-select">
-          <option value="0">1923</option>
-          <option value="1">1924</option>
-          <option value="2">1925</option>
-          <option value="3">1926</option>
-          <option value="4">1927</option>
-          <option value="5">1928</option>
-          <option value="6">1929</option>
-          <option value="7">1930</option>
-          <option value="8">1931</option>
-          <option value="9">1932</option>
-          <option value="10">1933</option>
-          <option value="11">1934</option>
-          <option value="12">1935</option>
-          <option value="13">1936</option>
-          <option value="14">1937</option>
-          <option value="15">1938</option>
-          <option value="16">1939</option>
-          <option value="17">1940</option>
-          <option value="18">1941</option>
-          <option value="19">1942</option>
-          <option value="20">1943</option>
-          <option value="21">1944</option>
-          <option value="22">1945</option>
-          <option value="23">1946</option>
-          <option value="24">1947</option>
-          <option value="25">1948</option>
-          <option value="26">1949</option>
-          <option value="27">1950</option>
-          <option value="28">1951</option>
-          <option value="29">1952</option>
-          <option value="30">1953</option>
-          <option value="31">1954</option>
-          <option value="32">1955</option>
-          <option value="33">1956</option>
-          <option value="34">1957</option>
-          <option value="35">1958</option>
-          <option value="36">1959</option>
-          <option value="37">1960</option>
-          <option value="38">1961</option>
-          <option value="39">1962</option>
-          <option value="40">1963</option>
-          <option value="41">1964</option>
-          <option value="42">1965</option>
-          <option value="43">1966</option>
-          <option value="44">1967</option>
-          <option value="45">1968</option>
-          <option value="46">1969</option>
-          <option value="47">1970</option>
-          <option value="48">1971</option>
-          <option value="49">1972</option>
-          <option value="50">1973</option>
-          <option value="51">1974</option>
-          <option value="52">1975</option>
-          <option value="53">1976</option>
-          <option value="54">1977</option>
-          <option value="55">1978</option>
-          <option value="56">1979</option>
-          <option value="57">1980</option>
-          <option value="58">1981</option>
-          <option value="59">1982</option>
-          <option value="60">1983</option>
-          <option value="61">1984</option>
-          <option value="62">1985</option>
-          <option value="63">1986</option>
-          <option value="64">1987</option>
-          <option value="65">1988</option>
-          <option value="66">1989</option>
-          <option value="67">1990</option>
-          <option value="68">1991</option>
-          <option value="69">1992</option>
-          <option value="70">1993</option>
-          <option value="71">1994</option>
-          <option value="72">1995</option>
-          <option value="73">1996</option>
-          <option value="74">1997</option>
-          <option value="75">1998</option>
-          <option value="76">1999</option>
-          <option value="77">2000</option>
-          <option value="78">2001</option>
-          <option value="79">2002</option>
-          <option value="80">2003</option>
-          <option value="81">2004</option>
-          <option value="82">2005</option>
-          <option value="83">2006</option>
-          <option value="84">2007</option>
-          <option value="85">2008</option>
-          <option value="86">2009</option>
-          <option value="87">2010</option>
-          <option value="88">2011</option>
-          <option value="89">2012</option>
-          <option value="90">2013</option>
-          <option value="91">2014</option>
-          <option value="92">2015</option>
-          <option value="93">2016</option>
-          <option value="94">2017</option>
-          <option value="95">2018</option>
-          <option value="96">2019</option>
-          <option value="97">2020</option>
-          <option value="98">2021</option>
-          <option value="99">2022</option>
-          <option value="100">2023</option>
-        </select>
-      </div>
-    </div>
-    <div id="colorResult" class="color-box mt-3"></div>
-  </div>
+  <main class="stage">
+    <section class="hero" aria-labelledby="title">
+      <h1 id="title" class="brand">Doğum Günü Rengi</h1>
 
+      <div class="result" aria-live="polite">
+        <p class="date" id="dateText"></p>
+        <output class="hex" id="hexText" for="day month year"></output>
+        <h2 class="reading-title" id="readingTitle"></h2>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="panelTitle">
+      <h2 id="panelTitle">Doğum tarihini seç</h2>
+      <p class="lead">Rengin, doğduğun güne özel olarak hesaplanır.</p>
+
+      <div class="fields">
+        <div class="field field-day">
+          <label for="day">Gün</label>
+          <select id="day" autocomplete="off"></select>
+        </div>
+        <div class="field field-month">
+          <label for="month">Ay</label>
+          <select id="month" autocomplete="off"></select>
+        </div>
+        <div class="field field-year">
+          <label for="year">Yıl</label>
+          <select id="year" autocomplete="off"></select>
+        </div>
+      </div>
+
+      <dl class="mix">
+        <div class="mix-row" id="rowHue">
+          <dt>Gün <span>belirler</span> ton</dt>
+          <dd id="hueText"></dd>
+          <div class="track"><i></i></div>
+        </div>
+        <div class="mix-row" id="rowSat">
+          <dt>Ay <span>belirler</span> doygunluk</dt>
+          <dd id="satText"></dd>
+          <div class="track"><i></i></div>
+        </div>
+        <div class="mix-row" id="rowLight">
+          <dt>Yıl <span>belirler</span> açıklık</dt>
+          <dd id="lightText"></dd>
+          <div class="track"><i></i></div>
+        </div>
+      </dl>
+
+      <button type="button" class="copy" id="copyBtn">HEX kodunu kopyala</button>
+      <p class="sr-only" id="copyStatus" role="status"></p>
+
+      <p class="credit">Tasarım: Köksal Akgün</p>
+    </section>
+
+    <section class="reading" id="reading" aria-labelledby="readingTitle">
+      <p class="reading-text" id="readingText"></p>
+      <ul class="chips" id="readingChips"></ul>
+      <p class="shadow" id="readingShadow"></p>
+      <p class="note">Eğlence amaçlı bir yorumdur.</p>
+    </section>
+  </main>
+
+  <script src="reading.js"></script>
   <script src="script.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
