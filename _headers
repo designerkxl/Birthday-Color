@@ -1,0 +1,8 @@
+# Netlify / Cloudflare Pages için güvenlik başlıkları.
+# GitHub Pages bu dosyayı kullanmaz; orada index.html içindeki meta CSP geçerlidir.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
