@@ -2,6 +2,8 @@
 
 Kullanıcıların doğum tarihlerine göre (Gün, Ay, Yıl) benzersiz bir **HSL** renk kodu üreten, bu renge özel kişilik analizi sunan ve sosyal medyada paylaşılabilecek yüksek çözünürlüklü kartlar oluşturan modern bir web uygulaması.
 
+Canlı test adresi: [digimooz.com/dgr](https://digimooz.com/dgr/)
+
 ---
 
 ## ✨ Özellikler
@@ -49,6 +51,14 @@ birthday-color/
 ├── logo.png          # Proje logosu
 └── README.md         # Proje dokümantasyonu
 ```
+
+---
+
+## 🚀 Canlı Demo & Kurulum
+
+### Canlı Demo
+Uygulamayı tarayıcınızda doğrudan denemek için:  
+👉 **[https://digimooz.com/dgr/](https://digimooz.com/dgr/)**
 
 ---
 
