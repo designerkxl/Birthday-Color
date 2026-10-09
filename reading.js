@@ -1,12 +1,10 @@
-/* Renk yorumu: ton (gün), doygunluk (ay) ve açıklık (yıl) değerlerinden
-   burç yorumu tadında kısa bir karakter tanımı üretir. Eğlence amaçlıdır. */
 (function (root) {
   'use strict';
 
-  // Ton aralığına göre renk aileleri (derece cinsinden üst sınır)
   var FAMILIES = [
     {
-      max: 15, // 346°-360° da kırmızıya düşer
+      key: 'kirmizi',
+      max: 15,
       names: ['Bordo', 'Ateş Kırmızısı', 'Mercan'],
       effect: 'Kırmızı, bir odadaki herkesin nabzını yükselten renktir; yanında olanlar harekete geçme isteği duyar.',
       core: 'Sen cesur ve kararlısın; işleri başlatan, peşini de bırakmayan kişisin.',
@@ -14,6 +12,7 @@
       shadow: 'sabırsızlık ve çabuk parlama'
     },
     {
+      key: 'turuncu',
       max: 40,
       names: ['Tarçın', 'Mandalina', 'Şeftali'],
       effect: 'Turuncu sıcaklık ve neşe yayar; yanında olanlar kendini davetli hisseder.',
@@ -22,6 +21,7 @@
       shadow: 'aynı anda çok işe girişip dağılmak'
     },
     {
+      key: 'sari',
       max: 70,
       names: ['Hardal', 'Güneş Sarısı', 'Papatya'],
       effect: 'Sarı iyimserlik ve zihin açıklığı getirir; yanında olanların keyfi yerine gelir.',
@@ -30,6 +30,7 @@
       shadow: 'zihnini bir türlü susturamamak'
     },
     {
+      key: 'fistik',
       max: 100,
       names: ['Zeytin Yeşili', 'Fıstık Yeşili', 'Bahar Filizi'],
       effect: 'Bu ton tazelik ve yenilenme hissi verir; yanında olanlar derin bir nefes alır.',
@@ -38,6 +39,7 @@
       shadow: 'bir yerde uzun süre duramamak'
     },
     {
+      key: 'yesil',
       max: 160,
       names: ['Orman Yeşili', 'Zümrüt', 'Nane'],
       effect: 'Yeşil dinginlik ve güven verir; yanında olanlar köklenmiş hisseder.',
@@ -46,6 +48,7 @@
       shadow: 'kendini ihmal edip herkesin yükünü taşımak'
     },
     {
+      key: 'turkuaz',
       max: 200,
       names: ['Petrol', 'Turkuaz', 'Deniz Köpüğü'],
       effect: 'Turkuaz berraklık ve ferahlık getirir; yanında olanların zihni sakinleşir.',
@@ -54,6 +57,7 @@
       shadow: 'gereğinden mesafeli görünmek'
     },
     {
+      key: 'mavi',
       max: 250,
       names: ['Gece Mavisi', 'Okyanus Mavisi', 'Gökyüzü'],
       effect: 'Mavi huzur ve güven uyandırır; yanında olanlar rahatlar.',
@@ -62,6 +66,7 @@
       shadow: 'duygularını içine atmak'
     },
     {
+      key: 'mor',
       max: 290,
       names: ['Çivit', 'Ametist', 'Lavanta'],
       effect: 'Mor gizem ve hayal gücü uyandırır; yanında olanlar seni merak eder.',
@@ -70,6 +75,7 @@
       shadow: 'kendi dünyana fazla çekilmek'
     },
     {
+      key: 'eflatun',
       max: 330,
       names: ['Böğürtlen', 'Orkide', 'Leylak'],
       effect: 'Bu ton coşku ve özgünlük taşır; yanında olanlar kendi tuhaflıklarıyla rahat eder.',
@@ -78,7 +84,8 @@
       shadow: 'anlaşılmadığını düşünüp kırılmak'
     },
     {
-      max: 346,
+      key: 'pembe',
+      max: 361,
       names: ['Gül Kurusu', 'Gül Pembesi', 'Pudra'],
       effect: 'Pembe şefkat ve yumuşaklık çağrıştırır; yanında olanlar kabul gördüğünü hisseder.',
       core: 'Sen empatik ve sevgi dolusun; insanların duygusunu daha onlar söylemeden sezersin.',
@@ -87,14 +94,12 @@
     }
   ];
 
-  // Doygunluk (ay): sönük / dengeli / canlı
   var SATURATION = [
     { max: 30, sentence: 'Enerjin sessiz ve ölçülü akar; gösterişe değil derinliğe güvenirsin.', trait: 'Mütevazı' },
     { max: 65, sentence: 'Duygu ile mantığı dengeleyerek hareket edersin.', trait: 'Dengeli' },
     { max: 101, sentence: 'Tutkun yüksek; girdiğin ortamda varlığını herkes hisseder.', trait: 'Tutkulu' }
   ];
 
-  // Açıklık (yıl): koyu / orta / açık
   var LIGHTNESS = [
     { max: 40, sentence: 'İç dünyan derin; az konuşur, çok düşünürsün.', trait: 'Derinlikli' },
     { max: 62, sentence: 'Ayakların yere basar, hayallerin yine de yükseklerde kalır.', trait: 'Sağlam' },
@@ -108,15 +113,16 @@
     return { item: list[list.length - 1], index: list.length - 1 };
   }
 
-  // hue: 0-360, saturation: 0-100, lightness: 0-100
   function describe(hue, saturation, lightness) {
-    var h = hue >= 346 ? 0 : hue;
+    var h = (hue % 360 + 360) % 360;
     var family = pick(FAMILIES, h).item;
     var sat = pick(SATURATION, saturation).item;
     var light = pick(LIGHTNESS, lightness);
 
     return {
-      name: family.names[light.index],
+      family: family.key,
+      name: family.names[light.index] || family.names[0],
+      core: family.core,
       text: [family.effect, family.core, sat.sentence, light.item.sentence].join(' '),
       traits: [family.traits[0], family.traits[1], sat.trait, light.item.trait],
       shadow: family.shadow

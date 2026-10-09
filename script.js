@@ -1,28 +1,15 @@
 (function () {
   'use strict';
 
-  /* ---------- Koruma ---------- */
-
-  // Sayfa başka bir sitede iframe içine gömülürse içeriği gizle
-  if (window.top !== window.self) {
-    document.documentElement.style.display = 'none';
-    try { window.top.location = window.self.location; } catch (e) { /* çapraz kaynak: engellenir */ }
-  }
-
   function isFormControl(target) {
-    return target && target.closest && target.closest('select, button, option');
+    return target && target.closest && target.closest('select, button, option, input');
   }
 
-  // Sağ tık menüsü, kopyalama, kesme, sürükleme ve metin seçimi kapalı
+  // Tarayıcı kısıtlamalarını güvenli şekilde bağla
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-  document.addEventListener('copy', function (e) { e.preventDefault(); });
-  document.addEventListener('cut', function (e) { e.preventDefault(); });
-  document.addEventListener('dragstart', function (e) { e.preventDefault(); });
   document.addEventListener('selectstart', function (e) {
     if (!isFormControl(e.target)) e.preventDefault();
   });
-
-  /* ---------- Veri ---------- */
 
   var MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
     'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
@@ -47,12 +34,12 @@
   var iconLink = document.querySelector('link[rel="icon"]');
 
   var currentHex = '';
+  var currentReading = null;
+  var currentHsl = { h: 0, s: 0, l: 0 };
   var copyTimer = null;
 
-  /* ---------- Yardımcılar ---------- */
-
   function daysInMonth(month, year) {
-    return new Date(year, month, 0).getDate(); // month: 1-12
+    return new Date(year, month, 0).getDate();
   }
 
   function fillSelect(select, items) {
@@ -90,16 +77,12 @@
     return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
   }
 
-  // Beyaz ya da koyu yazıdan hangisi renk üzerinde daha okunaklıysa onu seç
   function readableOn(rgb) {
     var L = luminance(rgb);
     var contrastWhite = 1.05 / (L + 0.05);
-    var inkL = luminance([6, 6, 6]);
-    var contrastInk = (L + 0.05) / (inkL + 0.05);
+    var contrastInk = (L + 0.05) / (luminance([6, 6, 6]) + 0.05);
     return contrastWhite >= contrastInk ? '#ffffff' : '#060606';
   }
-
-  /* ---------- Arayüz ---------- */
 
   function refreshDays() {
     var month = parseInt(monthSelect.value, 10);
@@ -116,37 +99,40 @@
 
   function setMeter(rowId, text, percent) {
     var row = document.getElementById(rowId);
-    row.querySelector('dd').textContent = text;
-    row.querySelector('.track i').style.setProperty('--p', percent.toFixed(1) + '%');
+    if (!row) return;
+    var dd = row.querySelector('dd');
+    if (dd) dd.textContent = text;
+    var track = row.querySelector('.track i');
+    if (track) track.style.setProperty('--p', percent.toFixed(1) + '%');
   }
 
   function renderReading(hue, saturation, lightness) {
+    if (!window.BirthdayReading) return;
     var r = window.BirthdayReading.describe(hue, saturation, lightness);
-    readingTitle.textContent = r.name;
-    readingText.textContent = r.text;
-    readingShadow.textContent = 'Gölge yanın: ' + r.shadow + '.';
-    readingChips.innerHTML = '';
-    r.traits.forEach(function (trait) {
-      var li = document.createElement('li');
-      li.textContent = trait;
-      readingChips.appendChild(li);
-    });
-    // Her değişimde yumuşak bir geçiş oynat
-    reading.classList.add('swap');
-    void reading.offsetWidth;
-    reading.classList.remove('swap');
+    currentReading = r;
+    if (readingTitle) readingTitle.textContent = r.name;
+    if (readingText) readingText.textContent = r.text;
+    if (readingShadow) readingShadow.textContent = 'Gölge yanın: ' + r.shadow + '.';
+    if (readingChips) {
+      readingChips.innerHTML = '';
+      r.traits.forEach(function (trait) {
+        var li = document.createElement('li');
+        li.textContent = trait;
+        readingChips.appendChild(li);
+      });
+    }
   }
 
   function updateColor() {
-    var day = parseInt(daySelect.value, 10);
-    var month = parseInt(monthSelect.value, 10);
-    var year = parseInt(yearSelect.value, 10);
+    var day = parseInt(daySelect.value, 10) || 1;
+    var month = parseInt(monthSelect.value, 10) || 1;
+    var year = parseInt(yearSelect.value, 10) || DEFAULT_YEAR;
 
-    // Gün → ton, ay → doygunluk, yıl → açıklık
     var hue = (day / 31) * 360;
     var saturation = (month / 12) * 100;
-    // Açıklık %20-%85 aralığında tutulur; uçlarda siyah/beyaza dönmesin
     var lightness = 20 + ((year - FIRST_YEAR) / (LAST_YEAR - FIRST_YEAR)) * 65;
+
+    currentHsl = { h: hue, s: saturation, l: lightness };
 
     var rgb = hslToRgb(hue, saturation, lightness);
     var hex = toHex(rgb);
@@ -155,8 +141,8 @@
     root.style.setProperty('--color', hex);
     root.style.setProperty('--on-color', readableOn(rgb));
 
-    dateText.textContent = day + ' ' + MONTHS[month - 1] + ' ' + year;
-    hexText.textContent = hex;
+    if (dateText) dateText.textContent = day + ' ' + MONTHS[month - 1] + ' ' + year;
+    if (hexText) hexText.textContent = hex;
 
     renderReading(hue, saturation, lightness);
 
@@ -165,32 +151,44 @@
     setMeter('rowLight', Math.round(lightness) + '%', lightness);
 
     if (themeMeta) themeMeta.setAttribute('content', hex);
-    if (iconLink) {
-      iconLink.setAttribute('href',
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23" +
-        hex.slice(1) + "'/%3E%3C/svg%3E");
-    }
   }
 
   function flashCopyLabel(text) {
+    if (!copyBtn) return;
     copyBtn.textContent = text;
-    copyStatus.textContent = text;
+    if (copyStatus) copyStatus.textContent = text;
     clearTimeout(copyTimer);
     copyTimer = setTimeout(function () {
       copyBtn.textContent = 'HEX kodunu kopyala';
-      copyStatus.textContent = '';
+      if (copyStatus) copyStatus.textContent = '';
     }, 1800);
   }
 
   function copyHex() {
-    if (!navigator.clipboard || !window.isSecureContext) {
-      flashCopyLabel('Kopyalanamadı');
-      return;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(currentHex).then(
+        function () { flashCopyLabel('Kopyalandı: ' + currentHex); },
+        function () { fallbackCopy(); }
+      );
+    } else {
+      fallbackCopy();
     }
-    navigator.clipboard.writeText(currentHex).then(
-      function () { flashCopyLabel('Kopyalandı: ' + currentHex); },
-      function () { flashCopyLabel('Kopyalanamadı'); }
-    );
+  }
+
+  function fallbackCopy() {
+    var ta = document.createElement('textarea');
+    ta.value = currentHex;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      flashCopyLabel('Kopyalandı: ' + currentHex);
+    } catch (e) {
+      flashCopyLabel('Kopyalanamadı');
+    }
+    document.body.removeChild(ta);
   }
 
   function init() {
@@ -202,18 +200,36 @@
     for (var y = FIRST_YEAR; y <= LAST_YEAR; y++) years.push({ value: y, text: y });
     fillSelect(yearSelect, years);
 
-    // Varsayılan: bugünün günü ve ayı, 2000 yılı
     monthSelect.value = today.getMonth() + 1;
     yearSelect.value = DEFAULT_YEAR;
     refreshDays();
     daySelect.value = Math.min(today.getDate(), daysInMonth(today.getMonth() + 1, DEFAULT_YEAR));
     updateColor();
+
+    if (window.BirthdayShare && typeof window.BirthdayShare.init === 'function') {
+      window.BirthdayShare.init({
+        getState: function () {
+          return {
+            hex: currentHex,
+            dateText: dateText ? dateText.textContent : '',
+            reading: currentReading,
+            hue: currentHsl.h,
+            saturation: currentHsl.s,
+            lightness: currentHsl.l
+          };
+        }
+      });
+    }
   }
 
   monthSelect.addEventListener('change', function () { refreshDays(); updateColor(); });
   yearSelect.addEventListener('change', function () { refreshDays(); updateColor(); });
   daySelect.addEventListener('change', updateColor);
-  copyBtn.addEventListener('click', copyHex);
+  if (copyBtn) copyBtn.addEventListener('click', copyHex);
 
-  init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
